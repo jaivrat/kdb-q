@@ -1,7 +1,7 @@
 # kdb-q
 KDB-Q
 
-## Jupyter Notebook with Python
+## Jupyter Notebook with Q
 1. Get kdb-q installed. KDB is underlying database, q is like sql to interact with kdb.
 2. Assuming you have Python installed, you now install pyq, the kernel for q support from within python.
    Have a look at this:

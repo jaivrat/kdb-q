@@ -14,3 +14,7 @@ KDB-Q
 4. Next on the command prompt, start the notebook
 
 (pyq2) jvsingh: ~  -> jupyter-notebook
+
+5. Some further samples here:
+https://www.youtube.com/watch?v=v2UoP0l6mOw&feature=youtu.be
+

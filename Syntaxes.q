@@ -37,6 +37,9 @@ x 4 0                  / returns “oH” i.e. 4th and 0th(first) element
 
 a:9 18 27
 
+`float$a
+/9 18 27f
+
 $[`float;a]     / Specify desired data type by its symbol name, 1st way
 9 18 27f
 
@@ -107,6 +110,15 @@ c
 900i
 
 
+/cast to date: casts the days since millenium
+`date$31 
+/2000.02.01          
+
+2018.01.01 + til 365
+2000.01m + til 12
+
+2000.01m + til 3
+15 + 2000.01m + til 3 //right to left
 
 
 /###############################################################################
@@ -194,14 +206,18 @@ dt
 /##############################################################################
 /(9;8;7)    or  ("a"; "b"; "c")   or   (-10.0; 3.1415e; `abcd; "r")
 
+
 (9;8;7)      
 ("a"; "b"; "c")     
 (-10.0; 3.1415e; `abcd; "r")
 
 type 9 8 7
+//7h
 type (9;8;7) 
+//7h
 
-
+9 8 7 = (9;8;7)      
+/1b
 
 
 l1:(-10.0;3.1415e;`abcd;"r") 
@@ -295,7 +311,7 @@ l[1][1][0][0]
 
 
 /###############################################################################
-/Joining Lists
+/Join Lists
 /###############################################################################
 1,2 3 4
 1 2 3 4
@@ -361,6 +377,55 @@ L[;;2] //Retrieve the items in the third position for each list at the second le
 `c`f`2
 "or"
 
+
+
+/===== Operations on Lists
+
+//init to 0 and add across the list: Example of decalarative programming.
+0 +/ 10 20 30 40 50
+/150
+
+/-- "/" operators is caller over. In functional prog its called fold.
+// It takes + on its left and applies across the list
+(+/) 10 20 30 40 50
+/150
+
+(*/) 1 2 3 4 5
+/120
+
+//Factorial 5
+(*/) 1 + til 5 
+/120
+
+
+//Keeps intermediate results. Use "\"
+(+\) 10 20 30 40 50
+
+
+/=== pair dyadic operator 4|5 give larger of 4 and 5
+4|5
+
+//== dyadic & gives lesser
+4&5
+
+//Finds max using over operator "/"
+(|/) 10 20 30 50 40
+/50
+
+//Finds min using over operator "/"
+(&/) 10 20 30 50 40
+/10
+
+//Running min
+(&\) 10 20 30 50 40
+
+//Running max
+(|\) 10 20 30 50 40
+
+
+//Above can be done with mac and min as well
+min 10 20 30 50 40
+max 10 20 30 50 40
 
 
 
@@ -515,8 +580,42 @@ flip flip scores
 
 /##############################################################################
 /Q Language - Table
-/Tables are at the heart of kdb+. A table is a collection of named columns 
-/implemented as a dictionary. q tables are column-oriented.
+/Tables are at the heart of kdb+. 
+/A table is a collection of named columns  implemented as a dictionary. q tables are column-oriented.
+/Remember: A table is collection of columns. And Columns are nothing but lists.
+/         In Q, the operatios on tables are columnwise operations. There are NO rowwise operations.
+/         Since, the operations are columnwise, they are vectorised operations.
+/     
+
+
+/Lets construct tables which have 1m rows. PLEASE ALWAYS REMEBER THERE ARE NO ROWS.
+/THEY ARE ALL COLUMNS.
+dates: 2018.01.01 + 10000000?31 //adding 10 mil random numbers between 0 and 31
+times: 10000000?24:00:00.000    //doesnt include 24:00:00.000 
+qtys:100 * 1+10000000?100
+//we want to randomly appl amzon google and select random symbols
+ixs:10000000?3  //10m random indices
+syms:`appl`amzn`googl ixs 
+//how does above work? Q considers list to be a function. List is a function that maps index to item
+// at that index. Or you can say you give list a position, it retrieves item at that position
+
+
+//Starting prices of appl amaxon and googl
+pxs: (1+ 10000000?0.03) * 172.0 1189.0 1073.0 ixs //randomly chosen prices
+
+//create table: Finally
+t:([] date: dates; time: times; sym: syms; qty:qtys; px:pxs)
+
+//sort the table, dates and times are in andom orders
+t: `date`time xasc t   /SORT by TIME within DATE
+
+5#t  //first 5 rows
+
+count t
+
+
+
+
 
 /Creating Tables: Tables are created using the following syntax −
 
@@ -883,6 +982,85 @@ tab2
 
 uj[tab1;tab2]
 
+
+
+//Defininding Q functions
+
+/squaring function
+{[x] x*x}
+
+{[x] x*x}5
+
+{[x] x*x}5 10
+
+
+{[x] x*x}(5 ;10)
+
+{[x] x*x}[5 ;10]
+//err
+
+
+{[x] x*x}[5] //calling with parameter
+
+//implict 
+{x*x}5
+
+
+//Newton Raphson, Fibonacci
+//f(x)=2-x^2 : find zero to get square root of two
+//xn - f(xn)/f'(xn)
+
+{[xn] xn + (2-xn*xn)%2*xn} //this is function
+//we want to iteratee starting with guess 1 till it converges
+{[xn] xn + (2-xn*xn)%2*xn}/[1.0]
+//1.414214
+{[xn] xn + (2-xn*xn)%2*xn}\[1.0] //this prints intemediate value
+//How does it work - it is overload / operator which feeds automatically
+
+//\P 16    this increases precision, if you want to see 
+
+
+//joining list
+10 20, 1 2 3
+
+//Fibonacci
+{-2#x}2 1 1 3    //x is whole list passed, it is not like function is called for each one
+{-2#x*x}2 1 1 3  //x is whole list passed, it is not like function is called for each one
+
+{x, sum -2#x} 1 1 // inside 1 1, sum -2#1 1 => 1 1 2
+//1 1 2
+//how to add iteration
+{x, sum -2#x}/[10; 1 1]  //do it 10 times, starting with 1 1
+
+{x, sum -2#x}\[10; 1 1] //in case you want to see incremental results
+
+
+
+/--- Delta operator to calculate numeric differences across
+deltas 10 20 30 40 50
+//10 10 10 10 10
+
+deltas 110 120 130 140 150 //calculate deltas always starting with prev. For first it gives 110
+/110 10 10 10 10
+
+//this is because sums of deltas should give back the original list
+// aso deltas of sumns should give back original
+sums deltas 110 120 130 140 150
+//110 120 130 140 150
+
+deltas sums 110 120 130 140 150
+////110 120 130 140 150
+
+//A problem in finance - max profit or loss.. max ddn etc
+buys: 2 1 4 3 5 4 //order book 
+sell: 12          //seeling 12, settle against buys
+//We want 2 1 4 3 2 0   //ie how many sold
+
+({sell&x} sums buys)
+/2 3 7 10 12 12
+
+deltas ({sell&x} sums buys)
+/2 1 4 3 2 0
 
 
 

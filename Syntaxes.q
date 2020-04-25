@@ -502,6 +502,9 @@ max 10 20 30 50 40
 
 
 
+
+
+
 /###############################################################################
 /Q Language - Dictionaries
 /domain → Range”
@@ -601,6 +604,17 @@ b
 // a    | 4
 // d    | 5
 // alpha| 10
+
+
+//DICTIONARIES are always of type 99
+//functions which run on dictionaries:
+// count, sum, first, last, avg, med, max, min, dev, 
+// deltas, asc, desc. reverse, upper (case), lower
+// 
+//We can join two dictionaries, Output keys are from both
+//dictionaries but values of commin keys get updated by the
+// right dictionary
+
 
 
 
@@ -2694,4 +2708,22 @@ tab
 /?.Q.chk is a monadic function whose single parameter is the symbolic file handle 
 //of the root directory. It creates empty tables in a partition, wherever necessary, 
 //by examining each partition subdirectories in the root.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

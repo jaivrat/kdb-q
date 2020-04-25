@@ -19,12 +19,85 @@ y[0]                   / return `abc
 y 0                    / same as y[0], also returns `abc
 y 0 2                  / returns `abc`cab, same as does y[0 2]
 
+//General list
 z: (`abc; 10 20 30; (`a`b); 9.9 8.8 7.7)      / List of different types,
 z 2 0                  / returns (`a`b; `abc),
 z[2;0]                 / return `a. first element of z[2]
 
 x: "Hello World!"      / list of character, a string
 x 4 0                  / returns “oH” i.e. 4th and 0th(first) element
+
+
+//Three ways to create Lists
+1 2 3
+(1; 2; 3)
+enlist(1 2 3)
+
+//Simple lis: one data type only
+//General list : any data types.
+//Both have different types Simple: 7h , General 0h
+type 1 2 3
+type (1 ;`aapl) 
+
+
+/Indexing on list
+a: 1 2 3
+
+a[0] /1
+a 0  /1
+/You can also call multiple index values
+a[0 2]
+/1 3
+a 0 2
+/1 3
+
+//USe index to assign new values
+a[1]: 5
+a
+/1 5 3
+
+
+
+
+//--------Nested list
+b: (1 2 3 ; (`IBM`MSFT`AAPL; 20 30 40))
+b
+// 1 2 3
+// (`IBM`MSFT`AAPL;20 30 40)
+b[0] /1 2 3
+b[1] 
+// IBM MSFT AAPL
+// 20  30   40  
+
+b[1][0] /`IBM`MSFT`AAPL
+b[1][1] /20 30 40
+
+b[1;]
+/IBM MSFT AAPL
+/20  30   40  
+
+b[1;1;]
+/20 30 40
+
+b[1;1;0]
+/20
+
+
+
+//Lists - part 2
+/joining list by ,
+/count, distinct, til, sum, avg, first, last, reverse
+/asc - ascending order, also adds an attrbute to list
+/desc - descending order
+/deltas  - differencing in consecutive 
+/differ  - returns a list of booleans indicating if two consecute elements differe from each other.
+
+a: 10 10 20 30 40 50 50 50 60
+differ a
+/101111001b
+
+
+
 
 
 
@@ -438,7 +511,6 @@ max 10 20 30 50 40
 d:`Name`Age`Sex`Weight!(`John;36;"M";60.3)   / Create a dictionary d
 
 d
-
 /Name   | `John
 /Age    | 36
 /Sex    | "M"
@@ -447,37 +519,91 @@ d
 count d             / To get the number of rows in a dictionary.
 4
 
+//to get keys of dictionary
 key d               / The function key returns the domain
-`Name`Age`Sex`Weight
+/`Name`Age`Sex`Weight
 
+//get values from dictionary
 value d             / The function value returns the range.
-`John
-36
-"M"
-60.3
+// `John
+// 36
+// "M"
+// 60.3
 
 
 cols d             / The function cols also returns the domain.
-`Name`Age`Sex`Weight
+//`Name`Age`Sex`Weight
 
 
+//Note Dictionaries are also like lists - in list we kave index as keys, in dict we have anything as key
 //Lookup
 d[`Name]       / Accessing the value of domain `Name
-`John
+/`John
 
 d[`Name`Sex]   / extended item-wise to a simple list of keys
-`John
-"M"
+/`John
+/"M"
 
 
 //Lookup with Verb @
 d1:`one`two`three!9 18 27
 
-d1[`two]
-18
+d1[`two] /18
 
-d1@`two
-18
+d1@`two /18
+
+
+
+//Reverse lookup in dictionary (ie using value to find key)
+d1?27
+/`three
+  
+
+//TO create a dictionary with only one key and one value
+//You need to enlist
+(enlist(`josh))!(enlist(42))
+/josh| 42
+
+
+//You can also create a disctioary with duplicate keys
+b: `a`b`c`a`d!1 2 3 4 5 
+// a| 1
+// b| 2
+// c| 3
+// a| 4
+// d| 5
+b[`a]   //it return first for duplicate. Even iwe try update , it will update first one.
+
+//insert new key
+b[`alpha]:10
+b
+// a    | 1
+// b    | 2
+// c    | 3
+// a    | 4
+// d    | 5
+// alpha| 10
+
+//If we want to retrieve only selected keys e.g `b and `c from dictionary, 
+`b`c#b
+// b| 2
+// c| 3
+
+//If we want to drop keys
+`b`c _ b
+// a    | 1
+// a    | 4
+// d    | 5
+// alpha| 10
+
+`b`c cut b   /same as above
+// a    | 1
+// a    | 4
+// d    | 5
+// alpha| 10
+
+
+
 
 /###############################################################################
 /Operations on Dictionaries

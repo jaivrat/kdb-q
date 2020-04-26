@@ -190,6 +190,191 @@ l2
 
 
 
+/==========================================================/
+/==================== Adverbs – Part 2 ====================/
+/==========================================================/
+
+/Over(/) for Accumulation
+
+/0: initial value
+0 +/ 1 2 3 4 5 6
+/21
+
+/The left operand “0” is the initial value passed to the accumulator.
+/The right operand is the list to be accumulated over.
+/The operation starts with (0+1), then this result is added to 2 and so on and so forth.
+
+/ Let’s take an example where we create our own dyadic function to add over a 
+/ list and simultaneously use the 0N to print out each step
+x: 1 2
+
+y: 0N!x
+/With a 0N on the left hand side, returns the right hand side after printing its 
+/unformatted text representation to console.
+
+y
+/1 2
+
+
+/Monadic over for Accumulation
+/One can get rid of the initial accumulator value by using the monadic form of 
+/over. Let’s take an example:
+(+/) 1 2 3 4 5 6
+/21
+/The parenthesis to enclose the function with over are mandatory.
+
+
+/------Prefix forms of above operations
++/[1 2 3 4 5 6]
+/21
+
+/0: initial value
++/[0; 1 2 3 4 5 6]
+
+
+
+/------Use cases:
+/-- min from list
+(&/) 10 2 3 40 5 60 4
+/2
+
+/-- max from list
+(|/) 10 2 3 40 5 60 4
+/60
+
+
+
+
+/===== Over for iteration
+/When over(/) follows a monadic function, one can specify the number of times to
+/iterate the same operation. Example:
+f:{x+2}
+
+f/[5;4]
+/14
+
+/The first argument passed is the number of iterations we want. It is 5 in this case.
+/The second argument passed is the initial value passed to the list. It is 4 in this case.
+
+f:{0N!x; x+2}
+f/[5;4]
+/14
+
+/The 0N function shows/prints the value of x passed to function f in each iteration.
+/In this case the console prints
+/4
+/6
+/8
+/10
+/12
+
+
+
+/===Over for iteration until convergence
+/ Over can behave as a converge when following a monadic function. It keeps 
+/ iterating until the last seen is produced. Example:
+
+{x*x}/[0.1]
+/0f
+
+/Lets run this with each step printed
+
+{0N!x; x*x}/[0.1]
+/0f
+
+/But console prints :
+//The function keeps getting called until the last value 0 is produced.
+/ 0.1
+/ 0.01
+/ 0.0001
+/ 1e-08
+/ 1e-16
+/ 1e-32
+/ 1e-64
+/ 1e-128
+/ 1e-256
+/ 0f
+
+
+/=====Over with condition check
+/ Over can be limited in the number of its iterations by specifying another 
+/ function which condition checks the input passed. Note this applies when 
+/ over is following a monadic function. Example:
+
+{0N!x;x+100}/[{1200>x};200]
+/The over function is modifying the first function.
+/The function:{1200>x} condition checks each iteration by comparing the value 
+/of the second argument which is the input to the first function.
+
+{x+100}/[{1200>x};1201]
+{x+100}/[{1200>x};1199]
+
+
+
+
+
+/====Fold using over
+
+/This use-case is for functions with more than two arguments.
+/   f/[x;y;z]
+/   Applies as:
+/   f[f[… f[f[x;y0;z0];y1;z1]; … yn-2;zn-2];yn-1;zn-1] 
+
+{x + y + z}/[ 1 5 6; 2 22; 3 33]
+//61 65 66
+
+//Like x = 1  5  6; f( 1 5 6; 2; 3) => 1 5 6 + 2 + 3 => 6 10 11
+//     x = 6 10 11; f(6 10 1; 22; 33) => 6 10 11 + 22 + 33 => 61 65 66
+
+
+
+
+
+/=========== Scan(\)
+/ The scan adverb \ is a higher-order function that behaves just like / except 
+/ that it returns all the intermediate accumulations instead of just the final 
+/ one. Whereas over produces an aggregate function that collapses a list, scan 
+/ produces a function whose output has the same number of items as its input.
+
+/ Let’s look at the same examples we used for over:
+
+//Infix scan with dyadic function
+0+\ 1 2 3 4 5 6 7 8 9 10
+/1 3 6 10 15 21 28 36 45 55
+
+//Prefix scan with dyadic function
++\[0; 1 2 3 4 5 6 7 8 9 10]
+/1 3 6 10 15 21 28 36 45 55
+
+
+//Infix scan with monadic function
+(+\) 1 2 3 4 5 6 7 8 9 10
+/1 3 6 10 15 21 28 36 45 55
+
+(+\)[ 1 2 3 4 5 6 7 8 9 10]
+/1 3 6 10 15 21 28 36 45 55
+
+//We will see how important above become when we need iterations with Tables and Joins.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

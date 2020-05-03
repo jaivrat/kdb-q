@@ -2711,19 +2711,49 @@ tab
 
 
 
+/===========================================================================
+///Write/read from csv files
+/1. Create a small table and write as csv file
+N:100
+
+/Lets construct tables which have N rows. 
+dates: 2018.01.01 + N?31 //adding 10 mil random numbers between 0 and 31
+times: N?24:00:00.000    //doesnt include 24:00:00.000 
+qtys:100 * 1+N?100
+//we want to randomly appl amzon google and select random symbols
+ixs:N?3  //10m random indices
+syms:`appl`amzn`googl ixs 
+//how does above work? Q considers list to be a function. List is a function that maps index to item
+// at that index. Or you can say you give list a position, it retrieves item at that position
 
 
+//Starting prices of appl amaxon and googl
+pxs: (1+ N?0.03) * 172.0 1189.0 1073.0 ixs //randomly chosen prices
 
+//create table: Finally
+t:([] date: dates; time: times; sym: syms; qty:qtys; px:pxs)
 
+//sort the table, dates and times are in andom orders
+t: `date`time xasc t   /SORT by TIME within DATE
 
+select from t
 
+//save in csv format/t.csv 0:.h.tx[`csv;t] / save in csv format
+/Two ways
+(hsym `$"/Users/jvsingh/work/github/kdb-q/data/t.csv")  0:.h.tx[`csv;t] 
+(hsym `$"/Users/jvsingh/work/github/kdb-q/data/tnew.csv")  0: csv 0: t
+ 
+ 
+//Now read from above CSV file
+t2: read0 (hsym `$"/Users/jvsingh/work/github/kdb-q/data/t.csv") 
+t2
+//But abobe is read as strings/lines
+/ "date,time,sym,qty,px"
+/ "2018-01-01,08:47:53.561,amzn,7100,1199.984"
+/ "2018-01-01,14:52:11.083,appl,8200,176.7812"
+/ "2018-01-01,17:32:30.776,appl,7500,175.6349"
+t3:("DTSJF";enlist ",") 0: (hsym `$"/Users/jvsingh/work/github/kdb-q/data/t.csv")
+t3
+meta t3
 
-
-
-
-
-
-
-
-
-
+/===========================================================================

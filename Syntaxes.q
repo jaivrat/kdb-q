@@ -2725,19 +2725,14 @@ ixs:N?3  //10m random indices
 syms:`appl`amzn`googl ixs 
 //how does above work? Q considers list to be a function. List is a function that maps index to item
 // at that index. Or you can say you give list a position, it retrieves item at that position
-
-
 //Starting prices of appl amaxon and googl
 pxs: (1+ N?0.03) * 172.0 1189.0 1073.0 ixs //randomly chosen prices
-
 //create table: Finally
 t:([] date: dates; time: times; sym: syms; qty:qtys; px:pxs)
-
 //sort the table, dates and times are in andom orders
 t: `date`time xasc t   /SORT by TIME within DATE
-
+/inspect
 select from t
-
 //save in csv format/t.csv 0:.h.tx[`csv;t] / save in csv format
 /Two ways
 (hsym `$"/Users/jvsingh/work/github/kdb-q/data/t.csv")  0:.h.tx[`csv;t] 
@@ -2755,5 +2750,8 @@ t2
 t3:("DTSJF";enlist ",") 0: (hsym `$"/Users/jvsingh/work/github/kdb-q/data/t.csv")
 t3
 meta t3
-
+t=t3
+t~t3
+2#t
+2#t3
 /===========================================================================

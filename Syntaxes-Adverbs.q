@@ -356,38 +356,3 @@ f/[5;4]
 
 //We will see how important above become when we need iterations with Tables and Joins.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

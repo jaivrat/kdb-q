@@ -486,23 +486,104 @@ l5[1; 2; 3]
 ///////Elided Indices
 L:((1 2 3; 4 5 6 7); (`a`b`c;`d`e`f`g;`0`1`2);("good";"morning"))
 L
-(1 2 3;4 5 6 7)
-(`a`b`c;`d`e`f`g;`0`1`2)
-("good";"morning")
+/ (1 2 3;4 5 6 7)
+/ (`a`b`c;`d`e`f`g;`0`1`2)
+/ ("good";"morning")
 
 
 
 L[;1;] //Retrieve all items in the second position of each list at the top level.
-4 5 6 7
-`d`e`f`g
-"morning"
+/ 4 5 6 7
+/ `d`e`f`g
+/ "morning"
 
 
 L[;;2] //Retrieve the items in the third position for each list at the second level.
-3 6
-`c`f`2
-"or"
+/ 3 6
+/ `c`f`2
+/ "or"
 
+
+
+L
+/ (1 2 3;4 5 6 7)
+/ (`a`b`c;`d`e`f`g;`0`1`2)
+/ ("good";"morning")
+
+/list Indexing at depth
+L[1][2]
+L[1;2] //SAME as above
+L[1 2] //This is NOT same as above, you are asking items 1 and 1
+/ (`a`b`c;`d`e`f`g;`0`1`2)
+/ ("good";"morning")
+L[(1; 2)] //Same as L[1 2]
+
+
+/list : The find operator ? returns the index of the first occurrence of the 
+/ value passed as its right argument.
+L: 1 2 3 4 3 5 6
+L?3
+/2  : first occurence of 3
+
+
+
+//find : Get me the item at index 1 of each list.
+L:((1 2 3; 4 5 6 7); (`a`b`c;`d`e`f`g;`0`1`2);("good";"morning"))
+L[;1;]
+/ 4 5 6 7
+/ `d`e`f`g
+/ "morning"
+
+//find: Retrieve the items at index 2 for each list at the first level.
+L[;;1]
+/ 2 5
+/ `b`e`1
+/ "oo"
+
+
+//Some useful list operations
+/list til distinct where group count
+/list : to return the indices of 1b in boolean list
+where 01101b
+/1 2 4
+
+/above can be used to multiple find in list: get all evens in list
+L: 1 2 68 7 90 22 31 70
+where (L mod 2) = 0 /1 2 4 5 7
+L[where (L mod 2) = 0] /2 68 90 22 70
+
+/list group indicies of similar items: returns a dictionary of items and indices
+L: 1 2 68 1 7 5 1 31 7 1
+group L
+/ 1 | 0 3 6 9
+/ 2 | ,1
+/ 68| ,2
+/ 7 | 4 8
+/ 5 | ,5
+/ 31| ,7
+
+/String is also list of characters
+group "I love India and Uttar Pradesh, Jaunpur"
+/ I| 0 7
+/  | 1 6 12 16 22 31
+/ l| ,2
+/ o| ,3
+/ v| ,4
+/ e| 5 27
+/ n| 8 14 35
+/ d| 9 15 26
+/ i| ,10
+/ a| 11 13 20 25 33
+/ U| ,17
+/ t| 18 19
+/ r| 21 24 38
+/ P| ,23
+/ s| ,28
+/ h| ,29
+/ ,| ,30
+/ J| ,32
+/ u| 34 37
+/ p| ,36
 
 
 /===== Operations on Lists

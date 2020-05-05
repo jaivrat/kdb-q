@@ -1,3 +1,8 @@
+a: 10
+a
+a +: 40  /as if a += 2
+a
+
 /#############Example 1 – Atom and List Formation
 
 / Note that the comments begin with a slash “ / ” and cause the parser
@@ -55,7 +60,7 @@ a 0 2
 a[1]: 5
 a
 /1 5 3
-
+"Hello World!"
 
 
 
@@ -313,6 +318,54 @@ b:(0b;1b;0b;1b;1b)                / Simple Binary Lists
 
 b
 01011b
+
+
+/append to list
+ll:(1 2 3 4)
+ll: ll, 7 8
+ll
+/1 2 3 4 7 8
+
+
+//text data: char, symbol
+/ char: It corresponds to a SQL CHAR. It is denoted by a single character enclosed in double quotes.
+
+xx: "q"  
+xx
+xx[0];
+xx[1];
+
+
+/matrix: list of list
+ll: ((1 2 3); (4 5 6); (8 7 9 ))
+ll
+/ 1 2 3
+/ 4 5 6
+/ 8 7 9
+
+
+/ symbol: A symbol is not a string. A symbol is akin to a SQL VARCHAR, in that it can hold an arbitrary number of characters, but is different in that it is atomic.
+/  The char “q” and the symbol `kdb are both atomic entities. A symbol is irreducible,
+/  meaning that the individual characters that comprise it are not directly accessible.
+xx[0] //error
+
+yy: `abc
+yy
+/Errors below: in KDB uptick is error "'", dont get confused for below
+yy[0]
+yy[1]
+yy[2]
+
+//string : nothing new but list of characters
+zz: "abcde"
+count zz //gives 5 as it is list of characters
+jj: "a", "b", "c", "d", "e"
+jj=zz
+/11111b
+type zz = type jj
+/1h
+
+
 
 symbols:(`Life;`Is;`Beautiful)    / Simple Symbols List
 

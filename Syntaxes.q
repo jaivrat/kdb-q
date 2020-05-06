@@ -586,6 +586,34 @@ group "I love India and Uttar Pradesh, Jaunpur"
 / p| ,36
 
 
+
+L1:(1;2;3);       /list
+L2: (10, 20 , 30) /note here we are joining atoms to get list
+/finally both are lists
+L1
+L2
+/adding two lists
+L1 + L2
+/atom to list
+100  + L1 /101 102 103
+/atom extends to nested list elements
+10 + ((1;2;3); (4;5))
+/ 11 12 13
+/ 14 15
+
+/Match ~ is used to compare two q entities and outputs 1b if they are identical else 0b.
+(1;2;3) ~(1;2;3)   /1b
+(1;2;3) ~(1;2;3;4) /0b
+
+//Relational ops also work: either has to be atom or must conform to length
+L: ((4;2;3); (4;5); (4;4;4))
+L <3 
+
+L = (4;5;4)
+(4;5;3) = L
+
+
+
 /===== Operations on Lists
 
 //init to 0 and add across the list: Example of decalarative programming.

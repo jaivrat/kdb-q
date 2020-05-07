@@ -585,6 +585,11 @@ group "I love India and Uttar Pradesh, Jaunpur"
 / u| 34 37
 / p| ,36
 
+//group occurence of words
+s: "I love India and Uttar Pradesh, Jaunpur"
+count each value group s
+(key group s)!(count each value group s)  //This will give word and its count
+
 
 
 L1:(1;2;3);       /list
@@ -1120,6 +1125,8 @@ meta trade
 // 1 4
 
 
+
+
 /There is a form of Each for monadic functions that uses the keyword “each”. For example,
 reverse ( 1 2 3; "abc")           /Reverse
 //a b c
@@ -1130,8 +1137,15 @@ each [reverse] (1 2 3; "abc")     /Reverse-Each
 /c b a
 
 '[reverse] ( 1 2 3; "abc")
-3 2 1
-c b a
+/ 3 2 1
+/ c b a
+
+/another example of above
+sum ( 1 2 3; 3 -10 -9; 100 1000 10000) //applies sum to list as whole
+/104 992 9994
+
+'[sum] ( 1 2 3; 3 -10 -9; 100 1000 10000) //applies sum to EACH element of list
+/6 -16 11100
 
 
 //Each-Left and Each-Right
@@ -2917,3 +2931,80 @@ t~t3
 2#t
 2#t3
 /===========================================================================
+
+//Extracting a Sub-dictionary(#)
+/ the take function(#)
+/ <list of keys>#dictionary -> returns a dictionary with the provided keys and corresponding values
+d: `a`b`c`d!1 2 3 4 
+d
+/ a| 1
+/ b| 2
+/ c| 3
+/ d| 4
+`a`c#d
+/ a| 1
+/ c| 3
+
+
+/Removing/deleting Entries from dictionary : The cut function (_) is used to retrieve a sub-dictionary by removing the provided keys and their corresponding values.
+`a`c _ d
+/ b| 2
+/ d| 4
+/When there are dupes, it removes all occurrence
+
+
+//Merging Dictionaries : The join function (,) as we used for joining lists is used for joining dictionaries.
+d1: `a`b`c!1 2 3
+d2: `e`f`g!1 2 300
+d1, d2
+/ a| 1
+/ b| 2
+/ c| 3
+/ e| 1
+/ f| 2
+/ g| 300
+
+/Merging Dictionaries : join (,). What happens if there are common keys between dictionaries?
+//q works right to left, values of right hand operand prevail, c wull be 300
+d1: `a`b`c!1 2 3
+d2: `e`f`c!1 2 300
+d1, d2
+/ a| 1
+/ b| 2
+/ c| 300
+/ e| 1
+/ f| 2
+
+//These two work same as in list (on values of ditionary) and output still dictionary
+/dictionary Mathematical operations between a Dictionary and Atom 
+/Relational operations between a Dictionary and Atom
+
+
+//Mathematical operations between Dictionaries
+/ The operations happen between the matching elements.
+d1: `a`b`c!1 2 3
+d2: `e`f`c!1 2 300
+d1*d2
+/ a| 1
+/ b| 2
+/ c| 900
+/ e| 1
+/ f| 2
+
+//Relational operations between Dictionaries
+d1: `a`b`c!-1 2 3
+d2: `e`f`c!1 2 300
+d1 < d2
+/ a| 0
+/ b| 0
+/ c| 1
+/ e| 1
+/ f| 1
+
+
+
+
+
+
+
+

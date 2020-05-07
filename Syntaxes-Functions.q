@@ -97,7 +97,7 @@ f:{[arg1]
     g:{[arg2] a*arg2}; 
     g arg1 
 }
-f[5] //SHOULD BE ERROR
+f[5] //SHOULD BE ERROR because loal a to f is not even avilable to enclosed function g
 
 
 /One needs to pass the argument to the function separately and define 
@@ -107,6 +107,10 @@ f:{ [arg1]
        g:{[somearg; arg2] somearg*arg2}[a;]; g arg1 }
 
 f[5]
+/Note abobe that g:{[somearg; arg2] somearg*arg2}[a;] is like partial function as 
+/its first argument "somearg" is binded with a, and in the last statement you make
+/a call with arg1 only.
+
 
 //I wonder how g:{[somearg; arg2] somearg*arg2}[a;] this works, unpassed arguments
 myfun:{[a;b] a+b}
@@ -191,19 +195,19 @@ f:{[x;y] x+y}
 
 /Function call is like prefix
 f[2;3]
+/5
+
+2 f 3 //infix call to function does not work.
+/ERROR
+
 
 (+/) 1 2 3 4
 /10
 (f/) 1 2 3 4
 /10
 
-
-
-
-
-
-
-
+(f\) 1 2 3 4
+/1 3 6 10
 
 
 

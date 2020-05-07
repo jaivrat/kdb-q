@@ -49,7 +49,26 @@ f[2 3]
 /  applications, lookup, and indexed retrievals.
 /  These syntactic forms are nothing but Application.
 /  Application in q is actually a higher-order function that takes a function
-/  and value(s) and evaluates the function at the value(s).
+/  and value(s) and ** evaluates the function at the value(s)**
+
+f:{x*x}
+f@10 20
+/100 400
+
+f[10 20]
+/100 400
+
+f:{[x;y]: x*y}
+f[4;5]
+//I want this to apply as f[4;5] f[2;3] usingh @ operator. How to do do this??
+//f@((4;5); (2;3))
+
+((4;5); (2;3))
+/ 4 5
+/ 2 3
+
+{f[x[0];x[1]]} @ ((4;5); (2;3)) //STRANGE, this takes 4 and 2 together and (5 and 3 ) thoether, columnwise :(
+
 
 
 /================= Verb @
@@ -60,11 +79,12 @@ f[2 3]
 /Evaluating a monadic function
 
 /Note: @ is not used for indexing at depth.
+/REMEBER: list is also a function, which maps indexes to values
 
 /Indexed retieval from lists
 l:(1 2 3; 4 5; 6 7 8)
 
-l@1
+l@1     /list is a function, so th @ takes 1 and applies to function
 /4 5 
 
 
@@ -87,6 +107,7 @@ count @ l
 l@0 2
 / 1 2 3
 / 6 7 8
+
 
 
 

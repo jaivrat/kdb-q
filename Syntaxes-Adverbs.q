@@ -36,7 +36,7 @@ count each l1
 /3 3 
 
 /------------------------------------------------------------------------------/
-/ The function each takes one item at a time from the list l1 and then applies 
+/ The function "each" takes one item at a time from the list l1 and then applies 
 / the count function to each one.
 /------------------------------------------------------------------------------/
 
@@ -69,14 +69,14 @@ l2
 /+ is an atmoic operator and applies to correspoding pairs.
 
 
-/But let’s say we have the dyadic join operator (,) . It does not perform an 
-/element-wise operation between lists, rather it takes in both left and right 
+/But let’s say we have the dyadic join operator (,) . It DOES NOT PERFORM AN ELEMENTWISE 
+/operation between lists, rather it takes in both left and right 
 /arguments in their entirety to join.
 "abc", "cfg"
 /"abccfg"
 
 
-/The challenge here is to perform the join element-wise. This is where we use 
+/The challenge here is TO PERFORM JOIN ELEMENT-WISE. This is where we use 
 /the each-both adverb (‘)
 "abc",'"cfg"
 / "ac"
@@ -100,7 +100,9 @@ l2
 / "ad"
 
 "cgd" ,' "a"
-
+/ "ca"
+/ "ga"
+/ "da"
 
 
 /------------------------------------------------------------------------------/
@@ -117,7 +119,7 @@ l2
 / Let's take an example where we want to join a last name to multiple first 
 / names, where the last name is common.
 
-("Mick"; "Miley"; "Sophie") ,\: " Higgins" //we use join(,) with adver for-each (\:)
+("Mick"; "Miley"; "Sophie") ,\: " Higgins" //we use join(,) with adverb for-each (\:)
 / "Mick Higgins"
 / "Miley Higgins"
 / "Sophie Higgins"
@@ -127,12 +129,12 @@ l2
 
 
 /Another eample
-1 2 3 +\: (4;5;6;7)  /for loop on each of 1 2 3 and added to (4;5;6;7) 
+1 2 3 +\: (4;5;6;7)  /for loop on each of left guys, ie 1 2 3 and added to (4;5;6;7) 
 / 5 6 7 8 
 / 6 7 8 9 
 / 7 8 9 10
 
-1 2 3 +\: 4 5 6 7 /gives same as they are same as above
+1 2 3 +\: 4 5 6 7 /gives same as they are same as above.  ie (1;2;3;4) is same as 1 2 3 4
 / EQVIVALENT loop in other languages
 / for( i in 1 2 3)
 / {
@@ -174,7 +176,7 @@ l2
 / initial item of the source list. For example, to calculate the deltas of a 
 / list of prices.
 
-20 -': 100 99 101 102 101
+20 -': 100 99 101 102 101  //first one ie 100 has no prev, so 20 is initiated to be  previous for it
 /80 -1 2 1 -1
 
 
@@ -223,14 +225,17 @@ y
 /21
 /The parenthesis to enclose the function with over are mandatory.
 
+1000 +/ 1 2 3 4 5 6 //same as above but initialize sum with 1000
+/1021
+
 
 /------Prefix forms of above operations
 +/[1 2 3 4 5 6]
 /21
 
-/0: initial value
-+/[0; 1 2 3 4 5 6]
-
+/1000: initial value
++/[1000; 1 2 3 4 5 6]
+/102s
 
 
 /------Use cases:
@@ -246,7 +251,7 @@ y
 
 
 /===== Over for iteration
-/When over(/) follows a monadic function, one can specify the number of times to
+/When over(/) follows a MONADIC function, one can specify the number of times to
 /iterate the same operation. Example:
 f:{x+2}
 
@@ -255,6 +260,11 @@ f/[5;4]
 
 /The first argument passed is the number of iterations we want. It is 5 in this case.
 /The second argument passed is the initial value passed to the list. It is 4 in this case.
+
+/Similarly, this gives all intermediate values as we have see with (\) before.
+f\[5;4]
+4 6 8 10 12 14
+
 
 f:{0N!x; x+2}
 f/[5;4]
@@ -278,7 +288,6 @@ f/[5;4]
 /0f
 
 /Lets run this with each step printed
-
 {0N!x; x*x}/[0.1]
 /0f
 

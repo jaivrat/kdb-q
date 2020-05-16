@@ -167,6 +167,7 @@ l2
 
 /------------------------------------------------------------------------------/
 /======= Each-previous
+/ Also have a look at /https://code.kx.com/q/ref/maps/#each-prior
 /------------------------------------------------------------------------------/
 / The adverb each-previous (':) provides a declarative way to perform a dyadic 
 / operation on each item of a list with its predecessor.
@@ -188,6 +189,30 @@ l2
 /     print(l[i] - prev)
 /     prev = l[i]
 / }
+
+
+
+/Stock Returns
+stock_prices: 30.0 32.0 31.0 31.5 32.5 32 31.5 32
+0N -': stock_prices
+rets1 : -1.0 + (stock_prices) % (0N, stock_prices[til -1  + count stock_prices])
+rets1
+/ 0n 0.0666667 -0.03125 0.016129 0.031746 -0.0153846 -0.015625 0.015873
+
+//Aplying this has second argument pass first : f ': a1 a2 a3   does f[a2;a1] f[a3;a2]
+{[y;x] y-x}': [ 1 2 5 8 9]
+
+rets2: {[y;x] -1.0 + (y%x)}': [stock_prices]
+rets2
+/0n 0.0666667 -0.03125 0.016129 0.031746 -0.0153846 -0.015625 0.015873
+
+
+
+//prior keyword in mnemonic to ':
+rets3: {[y;x] -1.0 + y%x} prior stock_prices
+rets3
+/0n 0.0666667 -0.03125 0.016129 0.031746 -0.0153846 -0.015625 0.015873
+
 
 
 

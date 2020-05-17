@@ -1,24 +1,25 @@
 /Lets construct tables which have 1m rows. PLEASE ALWAYS REMEBER THERE ARE NO ROWS.
 /THEY ARE ALL COLUMNS.
-dates: 2018.01.01 + 10000000?31 //adding 10 mil random numbers between 0 and 31
-times: 10000000?24:00:00.000    //doesnt include 24:00:00.000 
-qtys:100 * 1+10000000?100
+N:100
+dates: 2018.01.01 + N?31 //adding 10 mil random numbers between 0 and 31
+times: N?24:00:00.000    //doesnt include 24:00:00.000 
+qtys:100 * 1+N?100
 //we want to randomly appl amzon google and select random symbols
-ixs:10000000?3  //10m random indices
+ixs:N?3  //10m random indices
 syms:`appl`amzn`googl ixs 
 //how does above work? Q considers list to be a function. List is a function that maps index to item
 // at that index. Or you can say you give list a position, it retrieves item at that position
 
 
 //Starting prices of appl amaxon and googl
-pxs: (1+ 10000000?0.03) * 172.0 1189.0 1073.0 ixs //randomly chosen prices
+pxs: (1+ N?0.03) * 172.0 1189.0 1073.0 ixs //randomly chosen prices
 
 //create table: Finally
 t:([] date: dates; time: times; sym: syms; qty:qtys; px:pxs)
 
 //sort the table, dates and times are in andom orders
 t: `date`time xasc t   /SORT by TIME within DATE
-
+t
 
 //Select query
 select date, time, qty, px from t where sym=`appl
@@ -37,21 +38,24 @@ last 10 20 30 40 50
 /50
 
 
-select open:first px, close: last px by date, time from t where sym=`appl
-// date       time        | open     close   
-// -----------------------| -----------------
-// 2018.01.01 00:00:00.049| 173.3187 173.3187
-// 2018.01.01 00:00:02.470| 177.0491 177.0491
-// 2018.01.01 00:00:02.593| 174.144  174.144 
-// 2018.01.01 00:00:02.681| 174.6041 174.6041
+select open:first px, close: last px by date from t where sym=`appl
+/ date      | open     close   
+/ ----------| -----------------
+/ 2018.01.01| 172.0695 172.0695
+/ 2018.01.02| 176.9233 172.9362
+/ 2018.01.06| 176.5323 176.5323
 
 
-select open:first px, close: last px , lo: min px, hi: max px by date, time from t where sym=`appl
-// date       time        | open     close    lo       hi      
-// -----------------------| -----------------------------------
-// 2018.01.01 00:00:00.049| 173.3187 173.3187 173.3187 173.3187
-// 2018.01.01 00:00:02.470| 177.0491 177.0491 177.0491 177.0491
-// 2018.01.01 00:00:02.593| 174.144  174.144  174.144  174.144 
+select open:first px, close: last px by date from t where sym=`appl
+
+
+
+select open:first px, close: last px , lo: min px, hi: max px by date from t where sym=`appl
+/ date      | open     close    lo       hi      
+/ ----------| -----------------------------------
+/ 2018.01.01| 172.0695 172.0695 172.0695 172.0695
+/ 2018.01.02| 176.9233 172.9362 172.9362 176.9233
+/ 2018.01.06| 176.5323 176.5323 176.5323 176.5323
 
 
 // Complex queries
@@ -104,7 +108,7 @@ type t //98 : its a table
 t:([] sym: `AAPL`IBM`MSFT; price: 100 200 300;  size :10 20 30)
 t
 
-//Gives list of all avi;able tables
+//Gives list of all available tables
 \a
 
 //also using this
@@ -145,8 +149,15 @@ meta trd  //Note here that type of price becomes upper case
 /===================== Part 2 ==========================/
 trd: ([] sym: `AAPL`IBM`MSFT; price: 100 200 300;  size :10 20 30)
 trd
+/ sym  price size
+/ ---------------
+/ AAPL 100   10  
+/ IBM  200   20  
+/ MSFT 300   30  
 
-//You get dictionary back if you do index first on eon the table
+
+//You get dictionary back if you do index first on eon the table: 
+// I see reconrds, this indexig gives rows and row is nothing but a dictionary.
 trd[0]
 // sym  | `AAPL
 // price| 100
@@ -288,7 +299,7 @@ trd
 // YEXT 300   50 
 
 
-//insert multiple records
+//insert multiple records in table
 `trd insert ((`IBM; 120; 40); (`AAPL; 130; 60)) //ERROR
 `trd insert (`IBM`AAPL; 120 130; 40 60) //CORRECT - philosophy of being columnar
 /6 7
@@ -303,7 +314,6 @@ trd
 // YEXT 300   50  
 // IBM  120   40  
 // AAPL 130   60  
-
 
 
 //Delete rows from table: NOTE that is returns (DOES NOT DO INPLACE like Oracle)
@@ -351,38 +361,225 @@ delete  from trd where price<>300
 
 
 
+//The “i” column : q provides a virtual column i which represents the offset of each record
+select i, sym, price from trd
+/ x sym  price
+/ ------------
+/ 0 AAPL 100  
+/ 1 IBM  200  
+/ 2 MSFT 300  
+/ 3 NVDA 250  
+
+
+
+//select[]
+/select[n] can be used to get the first n or last n records of a table.
+/select[n m] can be used to get records starting from n and upto count m from n.
+select [1 4] from trd
+/ sym  price size
+/ ---------------
+/ IBM  200   20  
+/ MSFT 300   30  
+/ NVDA 250   25  
+/ AMD  19    30  
+
+
+
+//The where phrase: output only the ones which meet the criteria defined(boolean 1b).
+//lets see on list
+l: 1 2 3 4 5
+where l>3  /indexes where it holds. Internally it generates booleans
+/3 4
+where 0N!l>3   //on server console it genrares 00011b
+/3 4
+
+
+/Since table is logically a list of records, we can perform an operation like below:
+trd
+trd[`price] > 250 
+/001001001b
+
+/return the records which satisfy this
+where trd[`price] > 250  
+/2 5 8
+trd 2 5 8
+trd where trd[`price] > 250 
+/ sym  price size
+/ ---------------
+/ MSFT 300   30  
+/ YEXT 300   50  
+/ IBM  900   60  
+
+/Let’s now use this is the select template:
+select from trd where price > 250
+/ sym  price size
+/ ---------------
+/ MSFT 300   30  
+/ YEXT 300   50  
+/ IBM  900   60  
+
+
+//Multiple where clause - we already know, skipping here. We use "," NOT "and"
+select from trd where price > 250 , size < 60
+/ sym  price size
+/ ---------------
+/ MSFT 300   30  
+/ YEXT 300   50  
+
+
+//If you prefer to use "and"  in , then bracket the expression.
+select from trd where (price > 250) and ( size < 60)
+
+
+//Reconstuct data
+N:12;
+dates: 2018.01.01 + N?31; //adding 10 mil random numbers between 0 and 31
+times: N?24:00:00.000;    //doesnt include 24:00:00.000 
+qtys:100 * 1+N?100;
+ixs:N?3 ;
+syms:`appl`amzn`googl ixs ;
+pxs: (1+ N?0.03) * 172.0 1189.0 1073.0 ixs; //randomly chosen prices
+trade:([] date: dates; time: times; sym: syms; qty:qtys; px:pxs);
+
+trade
+/ date       time         sym   qty  px      
+/ -------------------------------------------
+/ 2018.01.28 21:54:47.564 amzn  400  1196.813
+/ 2018.01.09 06:07:49.855 amzn  8100 1206.535
+/ 2018.01.06 19:51:34.380 amzn  1600 1197.531
+/ 2018.01.24 00:04:32.162 amzn  3400 1205.075
+/ 2018.01.27 15:01:58.182 googl 8100 1083.574
+/ 2018.01.18 17:04:33.378 appl  5800 175.5176
+/ 2018.01.15 10:41:11.202 googl 7700 1087.481
+/ 2018.01.22 01:53:39.465 appl  4400 173.2632
+/ 2018.01.13 02:14:20.158 googl 5700 1077.666
+/ 2018.01.31 17:38:59.162 appl  3800 177.0596
+/ 2018.01.25 14:11:14.460 googl 2000 1082.25 
+/ 2018.01.11 15:20:17.680 googl 4300 1082.314
+
+
+
+/The by phrase : The by clause defines how common values are grouped.
+/ result of grouped columns will be nested list
+select px, i by sym from trade
+/ sym  | px                                          x          
+/ -----| -------------------------------------------------------
+/ amzn | 1196.813 1206.535 1197.531 1205.075         0 1 2 3    
+/ appl | 175.5176 173.2632 177.0596                  5 7 9      
+/ googl| 1083.574 1087.481 1077.666 1082.25 1082.314 4 6 8 10 11
 
 
 
 
+//analytics on grouped
+select max px by sym from trade
+/ sym  | px      
+/ -----| --------
+/ amzn | 1206.535
+/ appl | 177.0596
+/ googl| 1087.481
+
+/Let’s see what happens if we do not select any column while using by
+/This returns the last record for each symbol
+select by sym from trade
+/ sym  | date       time         qty  px      
+/ -----| -------------------------------------
+/ amzn | 2018.01.24 00:04:32.162 3400 1205.075
+/ appl | 2018.01.31 17:38:59.162 3800 177.0596
+/ googl| 2018.01.11 15:20:17.680 4300 1082.314
+
+
+//ungroup
+ungroup select px by sym from trade
+/ sym   px      
+/ --------------
+/ amzn  1196.813
+/ amzn  1206.535
+/ amzn  1197.531
+/ amzn  1205.075
+/ appl  175.5176
+/ appl  173.2632
+/ appl  177.0596
+/ googl 1083.574
+/ googl 1087.481
+/ googl 1077.666
+/ googl 1082.25 
+/ googl 1082.314
 
 
 
+/Can a by subphrase be a q expression? – Yes
+select max date by (px > 500) from trade
+/ x| date      
+/ -| ----------
+/ 0| 2018.01.31
+/ 1| 2018.01.28
+
+/xbar: The xbar verb rounds its right argument down to the nearest multiple of
+/      the integer left argument. The right argument can be any numeric or temporal
+7 xbar 10 20 30 40 50 
+/7 14 28 35 49 
+
+/The trade table is grouped by symbol and 240 minute buckets.
+select px by sym, 240 xbar time.minute from trade
+/ sym   minute| px                       
+/ ------------| -------------------------
+/ amzn  00:00 | ,1205.075                
+/ amzn  04:00 | ,1206.535                
+/ amzn  16:00 | ,1197.531                
+/ amzn  20:00 | ,1196.813                
+/ appl  00:00 | ,173.2632                
+/ appl  16:00 | 175.5176 177.0596        
+/ googl 00:00 | ,1077.666                
+/ googl 08:00 | ,1087.481                
+/ googl 12:00 | 1083.574 1082.25 1082.314
+/      
+            
+/The avg operation is then applied to each item of the price column.
+select avg px by sym, 240 xbar time.minute from trade  
+/ sym   minute| px      
+/ ------------| --------
+/ amzn  00:00 | 1205.075
+/ amzn  04:00 | 1206.535
+/ amzn  16:00 | 1197.531
+/ amzn  20:00 | 1196.813
+/ appl  00:00 | 173.2632
+/ appl  16:00 | 176.2886
+/ googl 00:00 | 1077.666
+/ googl 08:00 | 1087.481
+/ googl 12:00 | 1082.713
+
+
+/ The exec template: exec a by b from t where c
+/ The command for select is identical to exec.
+/ The result depends on the number of columns specified in the exec.
+/ One column results in a list.
+/ More than one column results in a dictionary.
+/ One difference between select and exec is that the column lists do not have to 
+/ be rectangular to return a result. (Example for this below)
+
+exec sym from trade
+/`amzn`amzn`amzn`amzn`googl`appl`googl`appl`googl`appl`googl`googl
+
+exec sym, px  from trade
+/ sym| amzn     amzn     amzn     amzn     googl    appl     googl    appl     ..
+/ px | 1196.813 1206.535 1197.531 1205.075 1083.574 175.5176 1087.481 173.2632 ..
+
+exec px by sym from trade
+
+/exec with a single column with by clause returns a dictionary
+exec max px by sym from trade
+/ amzn | 1206.535
+/ appl | 177.0596
+/ googl| 1087.481
 
 
 
+//update a by b from t where c
+/ The command for update phrase is identical to select.
+/ The update phrase updates a pre-existing column in t with a value evaluated with an assignment.
+/ If the column does not exist, the column is joined to the result at the end of column list.
+/ The original table is not affected unless the data is persisted by using backtick.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 

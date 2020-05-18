@@ -99,3 +99,38 @@ mmu[;b]peach a
 / 81 99  117
 
 
+
+/===============================================================================
+/ Marginal Risk Contribution 
+/ https://faculty.washington.edu/ezivot/econ424/riskbudgetingslides.pdf
+/1. Input will be (A) covariance matrix and (b) Weights 
+/2. Output will be Risk Contribution
+/===============================================================================
+
+/ Covariance matrix
+cov_in: (3 3)#2.0 1.3 -1.96 1.3 1.0 0.8 -1.96 0.8 1.5;
+cov_in
+
+/-- Wts
+wts_in: 0.5 0.2 0.3;
+wts_in
+
+/-- just to check conformance
+wts_in mmu cov_in
+cov_in mmu wts_in
+
+/-- Variance of portfolio
+var_: (wts_in mmu cov_in) mmu wts_in
+
+/-- vol
+sig : var_ xexp 0.5;
+
+/-- Marginal Risk Contribution
+mcr : (1.0%sig)*(cov_in mmu wts_in)
+mcr
+
+/-- Risk contribution
+mcr * wts_in
+
+/-- Verify that Risk Controbutions add up to vol
+sig =sum mcr * wts_in

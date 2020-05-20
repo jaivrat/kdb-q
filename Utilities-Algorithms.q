@@ -134,3 +134,23 @@ mcr * wts_in
 
 /-- Verify that Risk Controbutions add up to vol
 sig =sum mcr * wts_in
+
+
+
+
+/GIVEN A VALUE, HOW DO I GET THE NULL OF THAT VALUE’S TYPE?
+/We take advantage of a property of q’s indexing: If you request an item from a list (or a dictionary, for that matter)
+/using an index that is out of range, q returns the null item for the list’s type.
+
+x: 1 2 3
+x 3
+/0N
+
+/Thus, we can take the item whose corresponding null we want, make a list from it, and then access that list with an out-of-range index:
+NullOf: {[item] enlist[item] 1}
+NullOf 1
+/0N
+
+
+
+

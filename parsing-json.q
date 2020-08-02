@@ -27,3 +27,13 @@ raze read0`:sample.json
 / age | 30f
 / cars| ("Ford";"BMW";"Fiat")
 
+
+
+/-- Nested Json
+nst: .j.k raze read0`:sample2_nested.json
+nst
+nst[`stuff]
+nst[`stuff][`onetype]
+select from nst[`stuff][`onetype] where id=1
+nst[`otherstuff]
+nst[`otherstuff][`thing]

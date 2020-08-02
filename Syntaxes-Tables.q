@@ -1,224 +1,115 @@
-/======Foreign Keys
-/  A foreign key is a column in one table whose values are members of a primary
-/  key column in another table. Foreign keys are the mechanism for establishing 
-/  relations between tables.
-
-/  Foreign keys are important to maintain referential integrity between tables 
-/  in databases. It means:
-/  Values in the foreign key column should exist in the primary key column.
-/  Operations such as deletion of a linked value need to be handled to maintain this relationship.
-/  Foreign keys in q is achieved by a concept called Enumeration.
+system "pwd"
 
 
-/==Enumeration
-/ For a long list containing a few distinct values, an enumeration can reduce 
-/ storage requirements.  Let’s see how it works under the cover(The below is 
-/ just for an explanatory purpose)
+/ In the coming chapters, we’re going to be looking at persisting the in-memory
+/ tables down to disk. There are multiple structures the data can be stored in.
+/ Serialized tables
+/ Splayed tables
+/ Partitioned tables
+/ Segmented tables
 
-y: `a`b`c`b`a`b`c`c`c`c`c`c`c`c
-x: `a`b`c
+/==============================================================================
+/                  Serialized tables
+/==============================================================================
+/ Any table(keyed or unkeyed) can be persisted to disk using 
+/ serialization/deserialization mechanism provided by the set and get operations
+/ (discussed in File I/O section).
 
-show e: "i"$x?y;
-/0 1 2 1 0 1 2 2 2 2 2 2 2 2i
-//These are index values stored instead of symbols
+/ * The entire table is saved down as a single data file.
+/ * set operation is used to save-down and get is used to retrieve back.
+/ * Always make sure to have enough memory in RAM when loading back.
 
-//getting back the values: Note list is a function, and we pass indices as args to give vals
-x e
-/`a`b`c`b`a`b`c`c`c`c`c`c`c`c
+/ Let’s take a practical example of this.
 
-`x$y
-/Enumeration stores just the indexes of distinct symbols, references that is. 
-/This is how foreign keys are implemented.
+/ * Create an in-memory table.
+/ * Save it down to disk using set.
+/ * End the q session.
+/ * Check the contents of the file on disk.
+/ * Start a new q session and load it back using get.
 
-
-/=================================================================================
-/The table friends has the primary key eid
-/The column eid in table bill is enumerated based on the primary key in the first table.
-/This relation lets us run the select query to get the data from the first 
-/table while running it on the table bill. (More on queries in the coming sections)
-
-friends :( [eid: 100 101 102] name:`joey`chandler`ross)
-friends
-/ eid| name    
-/ ---| --------
-/ 100| joey    
-/ 101| chandler
-/ 102| ross    
-
-bill:([]eid:`friends$100 101 102 101 100; money: 3 4 5 6 7) //foreign key
-bill
-/ eid money
-/ ---------
-/ 100 3    
-/ 101 4    
-/ 102 5    
-/ 101 6    
-/ 100 7    
-
-//If we try to add some eif in bill which is not in friends then it is ERROR
-
-
-//Complex Column Data
-/     There are cases when one needs to store lists inside cells which means having 
-/     nested column lists. Simple column lists are more efficient in storing and 
-/     analyzing data though.
-/     
-/     But it’s completely fine to have nested lists. Let’s take an example where we 
-/     have a case of getting some Market data for a symbol from different venues. 
-/     There might be a case where one venue is closed. So one might end up getting 
-/     scattered data.
-
-//See in https://thinqkdb.wordpress.com/tables-part-2/
-
-
-
-/====================Operations on tables and keyed tables
-/Let’s take the below two tables and then run operations on them
-
-t:([] name:`aa`bb`cc; age:21 22 23) /simple
-kt:([name:`aa`bb`cc]; age:21 22 23) /keyed table
+/Create a new table
+t:([] name:`ash`ketchum`pika; age: 12 13 14; city:`ny`nj`la)
 t
-/ name age
-/ --------
-/ aa   21 
-/ bb   22 
-/ cc   23 
-kt
-/ name| age
-/ ----| ---
-/ aa  | 21 
-/ bb  | 22 
-/ cc  | 23 
+/ name    age city
+/ ----------------
+/ ash     12  ny  
+/ ketchum 13  nj  
+/ pika    14  la  
 
+/Save to file
+(hsym `$"/Users/jvsingh/a-KDB-Q/t") set t
 
-//==List opf operations
-/ count -> Get the number of records in table
-/ first and last -> first and last records of table respectively
-/ keys -> Lists Keys of a table
-/ cols -> Lists Columns of a table
-/ xkey -> Set primary key of a table
-/ xcol -> Renaming a column
-/ xcols -> Arranging columns
-/ _ -> Cut operation to remove records
-/ # -> Take n number of records
-/ Insert -> Insert records into a table
-/ Upsert -> Upsert records into a table
+/On file system, have a look
+/ (base) jvsingh: ~/a-KDB-Q  -> file t
+/ t: dasa
+/ (base) jvsingh: ~/a-KDB-Q  -> 
 
 
 
+/Loading the table back into a new q session with get
+t_read: get (hsym `$"/Users/jvsingh/a-KDB-Q/t")
 
-/keys -> Lists Keys of a table
-keys t
-/ `symbol$()
-
-keys kt
-/ ,`name
-
-/ cols -> Lists Columns of a table
-cols t
-/`name`age
+t_read
+/ name    age city
+/ ----------------
+/ ash     12  ny  
+/ ketchum 13  nj  
+/ pika    14  la  
 
 
-/ xkey -> Set primary key of a table
-t
-/ name age
-/ --------
-/ aa   21 
-/ bb   22 
-/ cc   23 
+/We can query directly as well, using filehandle
+select from (hsym `$"/Users/jvsingh/a-KDB-Q/t")
+/ name    age city
+/ ----------------
+/ ash     12  ny  
+/ ketchum 13  nj  
+/ pika    14  la  
 
-`name xkey t
-/ name| age
-/ ----| ---
-/ aa  | 21 
-/ bb  | 22 
-/ cc  | 23 
-
-/ xcol -> Renaming a column
-`age`name xcols t
-/ age name
-/ --------
-/ 21  aa  
-/ 22  bb  
-/ 23  cc  
-
-// xcols -> Arranging columns
-//.(Note xcols wouldn’t work for keyed tables.)
-
-
-/ _ -> Cut operation to remove records
-1_t //Rem first rec
-
--1_t //rem last rec
-
-
-/ # -> Take n number of records
-//we know this
-
-
-/ Insert -> Insert records into a table
-/ Upsert -> Upsert records into a table
-
-/upsert simply inserts to an unkeyed table
-t
-/ name age
-/ --------
-/ aa   21 
-/ bb   22 
-/ cc   23 
-
-`t upsert (`ee;26)
-
-t
-/ name age
-/ --------
-/ aa   21 
-/ bb   22 
-/ cc   23 
-/ ee   26 
 
 
 /===============================================================================
-/==========================Tables – Part 3
+/            Splayed Tables
 /===============================================================================
-/This section is about Attributes in q. Let’s see what attributes are and how 
-/they’re useful with some important points below:
+/There are some issues with serialized tables:
 
-/ * Attributes are metadata which are attached to lists of special types.
-/ * Attributes are applied on a dictionary domain or table column to speed up 
-/   certain operations.
-/ * The q interpreter makes certain optimizations based on the attribute applied. 
-/ * In simple words, a certain attribute tells the interpreter that this is a 
-/   specific kind of a list and the interpreter follows a different route than 
-/   usual to speed up operations.
-/ * The application of an attribute does not make any changes to the list or convert 
-/   it in any manner.
-/ * It is the responsibility of the user to keep the list in that special form. An 
-/   attribute is just a mediator between the user and the interpreter.
-/ * If you perform an operation that defies the original special form that the 
-/   attribute was indicating, the attribute is lost.
-/ * Attributes speed up operations only when you’re dealing in order of millions
-/   of records.
-/ * The syntax is an overload of # function. The first operand is the attribute 
-/   symbol and the second operand is the list/domain it is being applied on.
-/ * This is a lot to take in. Let’s jump into each of the attributes that q 
-/   supports and see examples for each of them.
+/The entire table has to be loaded into the memory even if a user needs only a 
+/chunk of it. Operations may be slower if queries are run against the persisted 
+/serialized table, being loaded each time of making a call.
 
+This is where Splayed tables come in.
 
+/ * Splayed tables are saved down to a directory with each column stored as a 
+/   single file with the same name as a column.
+/ * It solves the memory issue we noticed with serialized tables. This is because 
+/   the column data is loaded on-demand per query and released back when no 
+/   longer required.
 
-//-------  Sorted `s#
-/Applying the sorted attribute indicates that the list is sorted in ascending order.
-/When this attribute is applied, linear search is replaced by binary search.
-/This helps with functions such as in, within, find, relational operation.
-/Applying this to a non-sorted list results in a failure. (s-fail)
-/Appends that preserve the sorted order maintain this attribute else the attribute is lost.
-/It is helpful with time-series data if you apply this to the time column.
+/Restrictions:
+/ * Keyed tables cannot be splayed. Unkey them with 0! and then splay.
+/ * Only columns which are simple lists or compound lists(all items in the column 
+/   are lists of the same type) can be splayed.
+/ * All symbol columns must be enumerated (we discussed the concept here before) 
+/   before the table is splayed. The reason is to store the integer indexes of 
+/   the symbol values which is a much efficient way of saving space and faster 
+/   retrieval.
+
+/https://thinqkdb.wordpress.com/splayed-tables/
+
+/They are more efficient and useful than serialized tables, especially when the 
+/table sizes get large.
 
 
-l: 1 2 3 4
-l: `s#l
 
-...to be done...
+
+
+
+
+
+
+
+
+
+
 
 
 

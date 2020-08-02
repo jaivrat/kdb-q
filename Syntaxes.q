@@ -1,4 +1,5 @@
 a: 10
+
 a
 a +: 40  /as if a += 2
 a
@@ -1232,6 +1233,7 @@ tab1
 tab2:([]a:(2 3 4 5); b:(3 4 5 6); c:(4 5 6 20))
 tab2
 
+
 aj[`a`b;tab1;tab2]
 //  b d c
 // -------
@@ -1239,6 +1241,32 @@ aj[`a`b;tab1;tab2]
 // 2 3 7 4
 // 3 4 8 5
 // 4 5 9 6
+
+
+t:([]time:10:01:01 10:01:03 10:01:04;sym:`msft`ibm`ge;qty:100 200 150)
+t
+/ time       sym  qty
+/ -----------------
+/ 10:01:01 msft 100
+/ 10:01:03 ibm  200
+/ 10:01:04 ge   150
+
+q:([]time:10:01:00 10:01:00 10:01:00 10:01:02 09:01:03;sym:`ibm`msft`msft`ibm`ge;px:100 99 101 98 20)
+q
+/ time     sym  px 
+/ -----------------
+/ 10:01:00 ibm  100
+/ 10:01:00 msft 99 
+/ 10:01:00 msft 101
+/ 10:01:02 ibm  98 
+
+aj[`sym`time;t;q]
+/ time       sym  qty px
+/ ---------------------
+/ 10:01:01 msft 100 101
+/ 10:01:03 ibm  200 98
+/ 10:01:04 ge   150
+
 
 //Left Join(lj)
 //It’s a special case of aj where the second argument is a keyed table and the 

@@ -105,13 +105,13 @@ msg: {[] a:: a + 1; 0 }
 
 
 /Defining .z.ps 
-.clientSessions.captureASync:([] user:(); functionCall:(); host:(); sessionHandle:(); time:())
-.z.ps:{.clientSessions.captureASync ,: (.z.u; x; .z.a; .z.w; .z.T); value x }
+.clientSessions.captureASync:([] user:(); functionCall:(); host:(); sessionHandle:(); time:());
+.z.ps:{.clientSessions.captureASync ,: (.z.u; x; .z.a; .z.w; .z.T); value x };
 
 
 /Defining .z.pc 
-.clientSessions.captureClose:([] user:(); handle:(); host:(); sessionHandle:(); time:())
-.z.pc:{.clientSessions.captureClose ,: (.z.u; x; .z.a; .z.w; .z.T)}
+.clientSessions.captureClose:([] user:(); handle:(); host:(); sessionHandle:(); time:());
+.z.pc:{.clientSessions.captureClose ,: (.z.u; x; .z.a; .z.w; .z.T)};
 
 
 /====
@@ -314,41 +314,4 @@ mycb : {0N! x}
 
 
 /system command takes in a string with an OS level command and returns the corresponding results.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -100,11 +100,8 @@ msg: {[] a:: a + 1; 0 }
 
 
 /Defining .z.pg
-.z.po:{.clientSessions.captureSync ,: (.z.u; x; .z.a; .z.w; .z.T); value x };
 .clientSessions.captureSync:([] user:(); functionCall:(); host:(); sessionHandle:(); time:());
 .z.pg:{.clientSessions.captureSync ,: (.z.u; x; .z.a; .z.w; .z.T); value x };
-
-
 
 
 /Defining .z.ps 
@@ -115,8 +112,6 @@ msg: {[] a:: a + 1; 0 }
 /Defining .z.pc 
 .clientSessions.captureClose:([] user:(); handle:(); host:(); sessionHandle:(); time:())
 .z.pc:{.clientSessions.captureClose ,: (.z.u; x; .z.a; .z.w; .z.T)}
-
-
 
 
 /====

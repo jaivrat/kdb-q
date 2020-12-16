@@ -113,8 +113,8 @@ msg: {[] a:: a + 1; 0 }
 
 
 /Defining .z.pc 
-.clientSessions.captureClose:([] user:(); functionCall:(); host:(); sessionHandle:(); time:())
-.z.pc:{.clientSessions.captureClose ,: (.z.u; x; .z.a; .z.w; .z.T); value x }
+.clientSessions.captureClose:([] user:(); handle:(); host:(); sessionHandle:(); time:())
+.z.pc:{.clientSessions.captureClose ,: (.z.u; x; .z.a; .z.w; .z.T)}
 
 
 
